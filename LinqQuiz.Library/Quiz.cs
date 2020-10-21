@@ -80,7 +80,28 @@ namespace LinqQuiz.Library
         /// </remarks>
         public static FamilySummary[] GetFamilyStatistic(IReadOnlyCollection<IFamily> families)
         {
-            throw new NotImplementedException();
+            if (families == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            List<FamilySummary> result = new List<FamilySummary>();
+            var index = 1;
+
+            foreach (var item in families)
+            {
+                if (item.Persons.Count() == 0)
+                {
+                    result.Add(new FamilySummary { FamilyID = index, NumberOfFamilyMembers = 0, AverageAge = 0 });
+                }
+                else
+                {
+                    result.Add(new FamilySummary { FamilyID = index, NumberOfFamilyMembers = item.Persons.Count(p => p != null), AverageAge = item.Persons.Average(item => item.Age) });
+                    index++;
+                }
+
+            }
+            return result.ToArray();
         }
 
         /// <summary>
@@ -98,7 +119,10 @@ namespace LinqQuiz.Library
         /// </remarks>
         public static (char letter, int numberOfOccurrences)[] GetLetterStatistic(string text)
         {
-            throw new NotImplementedException();
+            return text.Where(x => char.IsLetter(x))
+                        .GroupBy(x => x)
+                        .Select(x => (letter: x.Key, numberOfOccurrences: x.Count()))
+                        .ToArray();
         }
     }
 }
